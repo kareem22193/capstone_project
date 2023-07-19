@@ -1,0 +1,285 @@
+---
+title: "cyclistic_markdown"
+author: "kareem"
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+date: "2023-07-15"
+---
+
+
+##installing and loading##
+``` {r install pckages}
+options(repos = "https://cran.rstudio.com/")#I had to make this because the default repository mirror is not set  
+install.packages("tidyverse")
+install.packages("ggplot2")
+install.packages("lubridate")
+install.packages("readr")
+install.packages("magrittr")
+```
+
+now we load them 
+
+``` {r load libraries}
+library(tidyverse)
+library(ggplot2)
+library(readr)
+library(lubridate)
+library(magrittr)
+library(dplyr)
+```
+##importing the data##
+after we intalled the packages and loaded them , we want to import our file, 
+which is in csv format 
+
+ I tried to import it like this import code:
+
+year_data_v3 <- read_csv("C:/Users/keemo/Desktop/data analysis/google/course 8/capstone/back up files/working on R/year_data_v3.csv")
+
+ but it showed us different column names, so I imported it in different way and name each column by its name , for sake of simplicity :
+
+```{r}
+library(data.table)
+cyclistic <- fread("C:/Users/keemo/Desktop/data analysis/google/course 8/capstone/back up files/working on R/year_data_v3.csv")
+column_names <- c("ride_id", "rideable_type","started_at","ended_at","start_station_name","start_station_id","end_station_name","end_station_id","member_casual","ride_length","start_cord","end_cord","start_month","start_day","start_hour")  # Replace with your actual column names
+setnames(cyclistic, as.character(column_names))
+```
+
+##exploring and analysing##
+let's have a quick look on our data:
+
+
+```{r}
+head(cyclistic)
+```
+lets see our data structure 
+```{r}
+str(cyclistic)
+
+```
+
+we need to change some of columns data types
+
+```{r}
+library(hms)
+cyclistic$ride_length <- as_hms(cyclistic$ride_length)#to show and calculate time in hh:mm format
+
+```
+
+let have snap look
+```{r}
+head(cyclistic)
+```
+we want to have inclusive look to the duration of rides in minutes :
+
+
+```{r}
+mean_ride_length <- as.hms(mean(cyclistic$ride_length))
+median_ride_length <-as.hms(median(cyclistic$ride_length))
+max_ride_length <- as.hms(max(cyclistic$ride_length))
+min_ride_length <- as.hms(min(cyclistic$ride_length))
+
+```
+we created  those varaiable, and now we will see them in one row:
+
+
+```{r}
+print(mean_ride_length)
+print(median_ride_length)
+print(max_ride_length)
+print(min_ride_length)
+```
+we found that the mean value of ride length is around 15 minutes fro the ride , and the median value is 9:51 mins 
+we also note that there are trips that hasn't started but was recorded (ride_length = 00:00) 
+
+we will see the trend through months periods:
+
+```{r}
+library(scales)
+
+ggplot(cyclistic, aes(x = start_month)) +
+  geom_bar(fill = "blue") +
+  labs(x = "Month", y = "Number of Rides") +
+  labs(title = "Number of Rides per Month") +
+  scale_x_continuous(breaks = 1:12, labels = 1:12) + #this to seperate x axis to 12
+  scale_y_continuous(labels = scales::number_format())#this to show the number range
+
+
+```
+
+
+
+from the plot I can notice that:
+1- the summer months are the peak season in number of rides
+2- December, January and February are the least months and also they have almost same number of rides 
+
+
+I am curious , lets test the total ride_lenght for each month and see if the grapgh would change 
+```{r}
+
+ride_length_data <- cyclistic %>%
+  group_by(start_month) %>%
+  summarise(total_ride_length = as.hms(sum(ride_length)))
+view(ride_length_data)
+```
+we will creat plot now 
+
+```{r}
+ggplot(data = ride_length_data) +
+  geom_col(mapping = aes(x = start_month, y = total_ride_length)) +
+  labs(x = "Month", y = "Total Ride Length in hours", title = "Total Ride Length per Month")+
+  scale_x_continuous(breaks = 1:12, labels = 1:12) 
+
+
+```
+
+it seems like the previous chart and it is more solid proof that summer rides are more and longer 
+
+now we want to explore more data , 
+```{r}
+# Calculate the average ride time by day and user type
+average_ride_time <- aggregate(ride_length ~ member_casual + start_day, data = cyclistic, FUN = mean)
+
+# Print the result
+average_ride_time
+```
+it is obvious that people prefer saturday and sunday , propably it is because of the weekend ! 
+
+
+let's see in general who ride more members or casual on average ?
+
+```{r}
+aggregate(cyclistic$ride_length ~ cyclistic$member_casual, FUN = mean) #this is to creat table that would combine both casual and member riders in one column and find their values average 
+```
+####very clear members ride longer####
+
+we will create a code that wil present a pie chart that will show the percentage of casual to member percentages 
+and another pie chart that will show the percentage of 3 types of bikes
+
+```{r}
+
+member_casual_count <- table(cyclistic$member_casual)
+pie(member_casual_count, labels = paste0(names(member_casual_count), ": ", round(member_casual_count/sum(member_casual_count) * 100, 2), "%"))
+
+bike_type_count <- table(cyclistic$rideable_type)
+pie(bike_type_count, labels =paste0(names(bike_type_count),":",round(bike_type_count/sum(bike_type_count)*100,2),"%"))
+
+```
+
+members are more than casual riders , what is the interesting that docked bikes are very unliked, maybe this should be considered for management and sales team
+
+
+
+now we will create a bar chart that will show us relationship between membership and ride on each day of the weeks 
+```{r}
+cyclistic %>%
+group_by(member_casual, start_day) %>%
+summarise(number_of_rides = n()
+,average_duration = mean(ride_length)) %>%
+arrange(member_casual, start_day) %>%
+ggplot(aes(x = start_day, y = number_of_rides, fill = member_casual)) +
+geom_col(position = "dodge")
+  
+```
+
+in middle of the week it looks members ride more than other days and much more than casual riders , that gives us hint when to focus our ads but for members , they prefer saturday and sunday a little bit more than other days 
+
+
+
+
+```{r}
+
+# Create the table
+hour_table <- table(cyclistic$start_hour, cyclistic$member_casual)
+
+# Print the table
+print(hour_table)
+
+```
+
+```{r}
+library(scales)
+
+# we creat table for member rides
+member_df <- data.frame(hour = 0:23, count = hour_table[, "member"]) 
+#we creat table for casual rides
+casual_df <- data.frame(hour = 0:23, count = hour_table[, "casual"])
+
+# Create the line chart fro both tables
+ggplot() +
+  geom_line(data = member_df, aes(x = hour, y = count, color = "Member")) +
+  geom_line(data = casual_df, aes(x = hour, y = count, color = "Casual")) +
+  labs(x = "Hour", y = "Number of Rides", color = "Ride Type") +
+  labs(title = "Number of Rides by Hour (Member vs Casual)") +
+  scale_x_continuous(breaks = 0:23, labels = 0:23)+
+  scale_y_continuous(labels = scales::comma)
+
+```
+
+it is obvious that both riders (casual and member) prefer to ride around 5 pm, except that member also has its rising at 8 am o'clock, this could be because they go to work or school at that tide 
+
+note: I revised the csv file , the 00 (12 am) oclock surge is due to error which has problem in the file that didn't show hours in the date , and so it recorded all rides that day only in 12 oclock and not any other hour, we will go back to SQL, clean Octobor CSV file, then replace it in year_data csv file after we deleted all dirt 10th month files , afet that we creat the new table I named year_data_v4
+
+
+
+```{r}
+# we choose the location to import our new table
+setwd("C:/Users/keemo/Desktop/data analysis/google/course 8/capstone/back up files")
+
+# Read the CSV file into a data frame
+year_data_v4 <- read.csv("year_data_v4.csv")
+
+# View the data frame
+View(year_data_v4)
+
+```
+then we creat new table as following:
+
+```{r}
+# Create the table
+hour_table_v2 <- table(year_data_v4$start_hour, year_data_v4$member_casual)
+
+# Print the table
+print(hour_table_v2)
+
+```
+now we can lets creat a new plot for our table after we cleaned it in previous steps:
+
+
+```{r}
+library(scales)
+hour_table_v2 <- table(year_data_v4$start_hour, year_data_v4$member_casual)
+
+# Print the table
+print(hour_table_v2) 
+
+# Convert the table to data frames
+member_df <- data.frame(hour = 0:23, rider_count = hour_table_v2[, "member"]) 
+casual_df <- data.frame(hour = 0:23, rider_count = hour_table_v2[, "casual"])
+
+# Create the line chart for both tables
+ggplot() +
+  geom_line(data = member_df, aes(x = hour, y = rider_count, color = "Member")) +
+  geom_line(data = casual_df, aes(x = hour, y = rider_count, color = "Casual")) +
+  labs(x = "Hour", y = "Number of Rides", color = "Rider Type") +
+  labs(title = "Number of Rides by Hour (Member vs Casual)") +
+  scale_x_continuous(breaks = 0:23, labels = 0:23)+
+  scale_y_continuous(labels = scales::comma)
+```
+
+very good, now we can see the line chart makes more sense
+
+##some findings##
+
+1- we notice that summer months especially July has the most rides and also has the most time of ride length 
+
+2- the member riders are more than casual riders by almost the half 
+
+3- the two main common bike type are the electric and classic, with very little who ride the docked (less than 3%)
+
+4- members ride more in the middle of the week Tuseday, Wednesday and Thursday more than other days, while casual riders prefer saturday and sunday little bit more than other days 
+
+5- the preferd time throughout the day is around 5 pm , while member riders has also rise in 8 am o'clock
+
+
