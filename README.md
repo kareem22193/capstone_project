@@ -397,10 +397,6 @@ before we backup, we will write following code to make sure that columns that we
 
 
 
-
-
-
-
 select *
 from year_data
 where 
@@ -421,244 +417,107 @@ no rows in results , now we back up and export it as CSV file to further analysi
 ```
 
 ``` R
-cyclistic_markdown
-kareem
-2023-07-15
-##installing and loading##
+---
+title: "cyclistic_markdown"
+author: "kareem"
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+date: "2023-07-15"
+---
 
+
+##installing and loading##
+``` {r install pckages}
 options(repos = "https://cran.rstudio.com/")#I had to make this because the default repository mirror is not set  
 install.packages("tidyverse")
-## Installing package into 'C:/Users/keemo/AppData/Local/R/win-library/4.3'
-## (as 'lib' is unspecified)
-## package 'tidyverse' successfully unpacked and MD5 sums checked
-## 
-## The downloaded binary packages are in
-##  C:\Users\keemo\AppData\Local\Temp\Rtmpgx3jFu\downloaded_packages
 install.packages("ggplot2")
-## Installing package into 'C:/Users/keemo/AppData/Local/R/win-library/4.3'
-## (as 'lib' is unspecified)
-## package 'ggplot2' successfully unpacked and MD5 sums checked
-## 
-## The downloaded binary packages are in
-##  C:\Users\keemo\AppData\Local\Temp\Rtmpgx3jFu\downloaded_packages
 install.packages("lubridate")
-## Installing package into 'C:/Users/keemo/AppData/Local/R/win-library/4.3'
-## (as 'lib' is unspecified)
-## package 'lubridate' successfully unpacked and MD5 sums checked
-## Warning: cannot remove prior installation of package 'lubridate'
-## Warning in file.copy(savedcopy, lib, recursive = TRUE): problem copying
-## C:\Users\keemo\AppData\Local\R\win-library\4.3\00LOCK\lubridate\libs\x64\lubridate.dll
-## to
-## C:\Users\keemo\AppData\Local\R\win-library\4.3\lubridate\libs\x64\lubridate.dll:
-## Permission denied
-## Warning: restored 'lubridate'
-## 
-## The downloaded binary packages are in
-##  C:\Users\keemo\AppData\Local\Temp\Rtmpgx3jFu\downloaded_packages
 install.packages("readr")
-## Installing package into 'C:/Users/keemo/AppData/Local/R/win-library/4.3'
-## (as 'lib' is unspecified)
-## package 'readr' successfully unpacked and MD5 sums checked
-## Warning: cannot remove prior installation of package 'readr'
-## Warning in file.copy(savedcopy, lib, recursive = TRUE): problem copying
-## C:\Users\keemo\AppData\Local\R\win-library\4.3\00LOCK\readr\libs\x64\readr.dll
-## to C:\Users\keemo\AppData\Local\R\win-library\4.3\readr\libs\x64\readr.dll:
-## Permission denied
-## Warning: restored 'readr'
-## 
-## The downloaded binary packages are in
-##  C:\Users\keemo\AppData\Local\Temp\Rtmpgx3jFu\downloaded_packages
 install.packages("magrittr")
-## Installing package into 'C:/Users/keemo/AppData/Local/R/win-library/4.3'
-## (as 'lib' is unspecified)
-## package 'magrittr' successfully unpacked and MD5 sums checked
-## Warning: cannot remove prior installation of package 'magrittr'
-## Warning in file.copy(savedcopy, lib, recursive = TRUE): problem copying
-## C:\Users\keemo\AppData\Local\R\win-library\4.3\00LOCK\magrittr\libs\x64\magrittr.dll
-## to
-## C:\Users\keemo\AppData\Local\R\win-library\4.3\magrittr\libs\x64\magrittr.dll:
-## Permission denied
-## Warning: restored 'magrittr'
-## 
-## The downloaded binary packages are in
-##  C:\Users\keemo\AppData\Local\Temp\Rtmpgx3jFu\downloaded_packages
-now we load them
+```
 
+now we load them 
+
+``` {r load libraries}
 library(tidyverse)
-## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ dplyr     1.1.2     ✔ readr     2.1.4
-## ✔ forcats   1.0.0     ✔ stringr   1.5.0
-## ✔ ggplot2   3.4.2     ✔ tibble    3.2.1
-## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
-## ✔ purrr     1.0.1     
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()
-## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
 library(ggplot2)
 library(readr)
 library(lubridate)
 library(magrittr)
-## 
-## Attaching package: 'magrittr'
-## 
-## The following object is masked from 'package:purrr':
-## 
-##     set_names
-## 
-## The following object is masked from 'package:tidyr':
-## 
-##     extract
 library(dplyr)
-##importing the data## after we intalled the packages and loaded them , we want to import our file, which is in csv format
+```
+##importing the data##
+after we intalled the packages and loaded them , we want to import our file, 
+which is in csv format 
 
-I tried to import it like this import code:
+ I tried to import it like this import code:
 
-year_data_v3 <- read_csv(“C:/Users/keemo/Desktop/data analysis/google/course 8/capstone/back up files/working on R/year_data_v3.csv”)
+year_data_v3 <- read_csv("C:/Users/keemo/Desktop/data analysis/google/course 8/capstone/back up files/working on R/year_data_v3.csv")
 
-but it showed us different column names, so I imported it in different way and name each column by its name , for sake of simplicity :
+ but it showed us different column names, so I imported it in different way and name each column by its name , for sake of simplicity :
 
+```{r}
 library(data.table)
-## 
-## Attaching package: 'data.table'
-## The following objects are masked from 'package:lubridate':
-## 
-##     hour, isoweek, mday, minute, month, quarter, second, wday, week,
-##     yday, year
-## The following objects are masked from 'package:dplyr':
-## 
-##     between, first, last
-## The following object is masked from 'package:purrr':
-## 
-##     transpose
 cyclistic <- fread("C:/Users/keemo/Desktop/data analysis/google/course 8/capstone/back up files/working on R/year_data_v3.csv")
 column_names <- c("ride_id", "rideable_type","started_at","ended_at","start_station_name","start_station_id","end_station_name","end_station_id","member_casual","ride_length","start_cord","end_cord","start_month","start_day","start_hour")  # Replace with your actual column names
 setnames(cyclistic, as.character(column_names))
-##exploring and analysing## let’s have a quick look on our data:
+```
 
+##exploring and analysing##
+let's have a quick look on our data:
+
+
+```{r}
 head(cyclistic)
-##             ride_id rideable_type          started_at            ended_at
-## 1: 207437DDEE6F1C59  classic_bike 2023-03-29 20:27:00 2023-03-29 20:31:00
-## 2: F33EB681BEEBF835 electric_bike 2023-03-17 12:19:00 2023-03-17 12:23:00
-## 3: 13B86F05D413851C electric_bike 2023-03-20 21:34:00 2023-03-20 22:01:00
-## 4: 5629B321CC59165F  classic_bike 2023-03-01 16:10:00 2023-03-01 16:14:00
-## 5: 2A8DDB8095A87DBB  classic_bike 2023-03-06 22:03:00 2023-03-06 22:06:00
-## 6: 82B358B5B1F4FCB5  classic_bike 2023-03-07 12:37:00 2023-03-07 12:41:00
-##             start_station_name start_station_id            end_station_name
-## 1: Lincoln Ave & Fullerton Ave     TA1309000058 Sheffield Ave & Webster Ave
-## 2:    Halsted St & Dickens Ave            13192 Sheffield Ave & Webster Ave
-## 3:      Dearborn St & Adams St     TA1305000005         Morgan St & Polk St
-## 4: Lincoln Ave & Fullerton Ave     TA1309000058 Sheffield Ave & Webster Ave
-## 5: Lincoln Ave & Fullerton Ave     TA1309000058 Sheffield Ave & Webster Ave
-## 6: Lincoln Ave & Fullerton Ave     TA1309000058 Sheffield Ave & Webster Ave
-##    end_station_id member_casual ride_length         start_cord
-## 1:   TA1309000033        member    00:03:15 41.92416,-87.64638
-## 2:   TA1309000033        member    00:03:17 41.92009,-87.64894
-## 3:   TA1307000130        member    00:26:55 41.87918,-87.62916
-## 4:   TA1309000033        member    00:03:57 41.92416,-87.64638
-## 5:   TA1309000033        member    00:03:41 41.92416,-87.64638
-## 6:   TA1309000033        member    00:04:03 41.92416,-87.64638
-##              end_cord start_month start_day start_hour
-## 1: 41.92154,-87.65382           3 Wednesday         20
-## 2: 41.92154,-87.65382           3    Friday         12
-## 3: 41.87174,-87.65103           3    Monday         21
-## 4: 41.92154,-87.65382           3 Wednesday         16
-## 5: 41.92154,-87.65382           3    Monday         22
-## 6: 41.92154,-87.65382           3   Tuesday         12
-lets see our data structure
+```
 
+lets see our data structure 
+```{r}
 str(cyclistic)
-## Classes 'data.table' and 'data.frame':   5817807 obs. of  15 variables:
-##  $ ride_id           : chr  "207437DDEE6F1C59" "F33EB681BEEBF835" "13B86F05D413851C" "5629B321CC59165F" ...
-##  $ rideable_type     : chr  "classic_bike" "electric_bike" "electric_bike" "classic_bike" ...
-##  $ started_at        : POSIXct, format: "2023-03-29 20:27:00" "2023-03-17 12:19:00" ...
-##  $ ended_at          : POSIXct, format: "2023-03-29 20:31:00" "2023-03-17 12:23:00" ...
-##  $ start_station_name: chr  "Lincoln Ave & Fullerton Ave" "Halsted St & Dickens Ave" "Dearborn St & Adams St" "Lincoln Ave & Fullerton Ave" ...
-##  $ start_station_id  : chr  "TA1309000058" "13192" "TA1305000005" "TA1309000058" ...
-##  $ end_station_name  : chr  "Sheffield Ave & Webster Ave" "Sheffield Ave & Webster Ave" "Morgan St & Polk St" "Sheffield Ave & Webster Ave" ...
-##  $ end_station_id    : chr  "TA1309000033" "TA1309000033" "TA1307000130" "TA1309000033" ...
-##  $ member_casual     : chr  "member" "member" "member" "member" ...
-##  $ ride_length       : chr  "00:03:15" "00:03:17" "00:26:55" "00:03:57" ...
-##  $ start_cord        : chr  "41.92416,-87.64638" "41.92009,-87.64894" "41.87918,-87.62916" "41.92416,-87.64638" ...
-##  $ end_cord          : chr  "41.92154,-87.65382" "41.92154,-87.65382" "41.87174,-87.65103" "41.92154,-87.65382" ...
-##  $ start_month       : int  3 3 3 3 3 3 3 3 3 3 ...
-##  $ start_day         : chr  "Wednesday" "Friday" "Monday" "Wednesday" ...
-##  $ start_hour        : int  20 12 21 16 22 12 20 20 12 11 ...
-##  - attr(*, ".internal.selfref")=<externalptr>
+
+```
+
 we need to change some of columns data types
 
+```{r}
 library(hms)
-## 
-## Attaching package: 'hms'
-## The following object is masked from 'package:lubridate':
-## 
-##     hms
 cyclistic$ride_length <- as_hms(cyclistic$ride_length)#to show and calculate time in hh:mm format
-let have snap look
 
+```
+
+let have snap look
+```{r}
 head(cyclistic)
-##             ride_id rideable_type          started_at            ended_at
-## 1: 207437DDEE6F1C59  classic_bike 2023-03-29 20:27:00 2023-03-29 20:31:00
-## 2: F33EB681BEEBF835 electric_bike 2023-03-17 12:19:00 2023-03-17 12:23:00
-## 3: 13B86F05D413851C electric_bike 2023-03-20 21:34:00 2023-03-20 22:01:00
-## 4: 5629B321CC59165F  classic_bike 2023-03-01 16:10:00 2023-03-01 16:14:00
-## 5: 2A8DDB8095A87DBB  classic_bike 2023-03-06 22:03:00 2023-03-06 22:06:00
-## 6: 82B358B5B1F4FCB5  classic_bike 2023-03-07 12:37:00 2023-03-07 12:41:00
-##             start_station_name start_station_id            end_station_name
-## 1: Lincoln Ave & Fullerton Ave     TA1309000058 Sheffield Ave & Webster Ave
-## 2:    Halsted St & Dickens Ave            13192 Sheffield Ave & Webster Ave
-## 3:      Dearborn St & Adams St     TA1305000005         Morgan St & Polk St
-## 4: Lincoln Ave & Fullerton Ave     TA1309000058 Sheffield Ave & Webster Ave
-## 5: Lincoln Ave & Fullerton Ave     TA1309000058 Sheffield Ave & Webster Ave
-## 6: Lincoln Ave & Fullerton Ave     TA1309000058 Sheffield Ave & Webster Ave
-##    end_station_id member_casual ride_length         start_cord
-## 1:   TA1309000033        member    00:03:15 41.92416,-87.64638
-## 2:   TA1309000033        member    00:03:17 41.92009,-87.64894
-## 3:   TA1307000130        member    00:26:55 41.87918,-87.62916
-## 4:   TA1309000033        member    00:03:57 41.92416,-87.64638
-## 5:   TA1309000033        member    00:03:41 41.92416,-87.64638
-## 6:   TA1309000033        member    00:04:03 41.92416,-87.64638
-##              end_cord start_month start_day start_hour
-## 1: 41.92154,-87.65382           3 Wednesday         20
-## 2: 41.92154,-87.65382           3    Friday         12
-## 3: 41.87174,-87.65103           3    Monday         21
-## 4: 41.92154,-87.65382           3 Wednesday         16
-## 5: 41.92154,-87.65382           3    Monday         22
-## 6: 41.92154,-87.65382           3   Tuesday         12
+```
 we want to have inclusive look to the duration of rides in minutes :
 
+
+```{r}
 mean_ride_length <- as.hms(mean(cyclistic$ride_length))
-## Warning: `as.hms()` was deprecated in hms 0.5.0.
-## ℹ Please use `as_hms()` instead.
-## This warning is displayed once every 8 hours.
-## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-## generated.
 median_ride_length <-as.hms(median(cyclistic$ride_length))
 max_ride_length <- as.hms(max(cyclistic$ride_length))
 min_ride_length <- as.hms(min(cyclistic$ride_length))
-we created those varaiable, and now we will see them in one row:
 
+```
+we created  those varaiable, and now we will see them in one row:
+
+
+```{r}
 print(mean_ride_length)
-## 00:15:31.29979
 print(median_ride_length)
-## 00:09:51
 print(max_ride_length)
-## 23:59:22
 print(min_ride_length)
-## 00:00:00
-we found that the mean value of ride length is around 15 minutes fro the ride , and the median value is 9:51 mins we also note that there are trips that hasn’t started but was recorded (ride_length = 00:00)
+```
+we found that the mean value of ride length is around 15 minutes fro the ride , and the median value is 9:51 mins 
+we also note that there are trips that hasn't started but was recorded (ride_length = 00:00) 
 
 we will see the trend through months periods:
 
+```{r}
 library(scales)
-## 
-## Attaching package: 'scales'
-## The following object is masked from 'package:purrr':
-## 
-##     discard
-## The following object is masked from 'package:readr':
-## 
-##     col_factor
+
 ggplot(cyclistic, aes(x = start_month)) +
   geom_bar(fill = "blue") +
   labs(x = "Month", y = "Number of Rides") +
@@ -667,70 +526,74 @@ ggplot(cyclistic, aes(x = start_month)) +
   scale_y_continuous(labels = scales::number_format())#this to show the number range
 
 
-from the plot I can notice that: 1- the summer months are the peak season in number of rides 2- December, January and February are the least months and also they have almost same number of rides
+```
+![Visualization](viz_1.png)
 
-I am curious , lets test the total ride_lenght for each month and see if the grapgh would change
+
+from the plot I can notice that:
+1- the summer months are the peak season in number of rides
+2- December, January and February are the least months and also they have almost same number of rides 
+
+
+I am curious , lets test the total ride_lenght for each month and see if the grapgh would change 
+```{r}
 
 ride_length_data <- cyclistic %>%
   group_by(start_month) %>%
   summarise(total_ride_length = as.hms(sum(ride_length)))
 view(ride_length_data)
-we will creat plot now
+```
+we will creat plot now 
 
+```{r}
 ggplot(data = ride_length_data) +
   geom_col(mapping = aes(x = start_month, y = total_ride_length)) +
   labs(x = "Month", y = "Total Ride Length in hours", title = "Total Ride Length per Month")+
   scale_x_continuous(breaks = 1:12, labels = 1:12) 
 
+```
+![Visualization](viz_2.png)
 
-it seems like the previous chart and it is more solid proof that summer rides are more and longer
+it seems like the previous chart and it is more solid proof that summer rides are more and longer 
 
-now we want to explore more data ,
-
+now we want to explore more data , 
+```{r}
 # Calculate the average ride time by day and user type
 average_ride_time <- aggregate(ride_length ~ member_casual + start_day, data = cyclistic, FUN = mean)
 
 # Print the result
 average_ride_time
-##    member_casual start_day    ride_length
-## 1         casual    Friday 1194.0903 secs
-## 2         member    Friday  719.8873 secs
-## 3         casual    Monday 1231.5190 secs
-## 4         member    Monday  691.2286 secs
-## 5         casual  Saturday 1395.3983 secs
-## 6         member  Saturday  809.7127 secs
-## 7         casual    Sunday 1435.9789 secs
-## 8         member    Sunday  808.8829 secs
-## 9         casual  Thursday 1108.1155 secs
-## 10        member  Thursday  704.7199 secs
-## 11        casual   Tuesday 1112.7367 secs
-## 12        member   Tuesday  698.5396 secs
-## 13        casual Wednesday 1074.6232 secs
-## 14        member Wednesday  697.6572 secs
-it is obvious that people prefer saturday and sunday , propably it is because of the weekend !
+```
+it is obvious that people prefer saturday and sunday , propably it is because of the weekend ! 
 
-let’s see in general who ride more members or casual on average ?
 
+let's see in general who ride more members or casual on average ?
+
+```{r}
 aggregate(cyclistic$ride_length ~ cyclistic$member_casual, FUN = mean) #this is to creat table that would combine both casual and member riders in one column and find their values average 
-##   cyclistic$member_casual cyclistic$ride_length
-## 1                  casual        1240.9505 secs
-## 2                  member         728.1417 secs
+```
 ####very clear members ride longer####
 
-we will create a code that wil present a pie chart that will show the percentage of casual to member percentages and another pie chart that will show the percentage of 3 types of bikes
+we will create a code that wil present a pie chart that will show the percentage of casual to member percentages 
+and another pie chart that will show the percentage of 3 types of bikes
+
+```{r}
 
 member_casual_count <- table(cyclistic$member_casual)
 pie(member_casual_count, labels = paste0(names(member_casual_count), ": ", round(member_casual_count/sum(member_casual_count) * 100, 2), "%"))
 
-
 bike_type_count <- table(cyclistic$rideable_type)
 pie(bike_type_count, labels =paste0(names(bike_type_count),":",round(bike_type_count/sum(bike_type_count)*100,2),"%"))
 
-
+```
+![Visualization](viz_3.png) 
+![Visualization](viz_4.png)
 members are more than casual riders , what is the interesting that docked bikes are very unliked, maybe this should be considered for management and sales team
 
-now we will create a bar chart that will show us relationship between membership and ride on each day of the weeks
 
+
+now we will create a bar chart that will show us relationship between membership and ride on each day of the weeks 
+```{r}
 cyclistic %>%
 group_by(member_casual, start_day) %>%
 summarise(number_of_rides = n()
@@ -738,43 +601,25 @@ summarise(number_of_rides = n()
 arrange(member_casual, start_day) %>%
 ggplot(aes(x = start_day, y = number_of_rides, fill = member_casual)) +
 geom_col(position = "dodge")
-## `summarise()` has grouped output by 'member_casual'. You can override using the
-## `.groups` argument.
+  
+```
+![Visualization](viz_5.png)
+in middle of the week it looks members ride more than other days and much more than casual riders , that gives us hint when to focus our ads but for members , they prefer saturday and sunday a little bit more than other days 
 
 
-in middle of the week it looks members ride more than other days and much more than casual riders , that gives us hint when to focus our ads but for members , they prefer saturday and sunday a little bit more than other days
+
+
+```{r}
 
 # Create the table
 hour_table <- table(cyclistic$start_hour, cyclistic$member_casual)
 
 # Print the table
 print(hour_table)
-##     
-##      casual member
-##   0  249209 382164
-##   1   26357  19892
-##   2   16209  11649
-##   3    9337   7150
-##   4    6654   8033
-##   5   11472  29673
-##   6   28515  89872
-##   7   49093 165813
-##   8   65299 200149
-##   9   65961 137668
-##   10  82761 126909
-##   11 107071 149716
-##   12 127298 172219
-##   13 133085 170884
-##   14 142081 172728
-##   15 159820 209906
-##   16 181258 281800
-##   17 202216 336012
-##   18 179849 269058
-##   19 138721 195420
-##   20 102292 136860
-##   21  86982 106604
-##   22  76592  80605
-##   23  56693  52198
+
+```
+
+```{r}
 library(scales)
 
 # we creat table for member rides
@@ -791,11 +636,15 @@ ggplot() +
   scale_x_continuous(breaks = 0:23, labels = 0:23)+
   scale_y_continuous(labels = scales::comma)
 
+```
+![Visualization](viz_6.png)
+it is obvious that both riders (casual and member) prefer to ride around 5 pm, except that member also has its rising at 8 am o'clock, this could be because they go to work or school at that tide 
 
-it is obvious that both riders (casual and member) prefer to ride around 5 pm, except that member also has its rising at 8 am o’clock, this could be because they go to work or school at that tide
+note: I revised the csv file , the 00 (12 am) oclock surge is due to error which has problem in the file that didn't show hours in the date , and so it recorded all rides that day only in 12 oclock and not any other hour, we will go back to SQL, clean Octobor CSV file, then replace it in year_data csv file after we deleted all dirt 10th month files , afet that we creat the new table I named year_data_v4
 
-note: I revised the csv file , the 00 (12 am) oclock surge is due to error which has problem in the file that didn’t show hours in the date , and so it recorded all rides that day only in 12 oclock and not any other hour, we will go back to SQL, clean Octobor CSV file, then replace it in year_data csv file after we deleted all dirt 10th month files , afet that we creat the new table I named year_data_v4
 
+
+```{r}
 # we choose the location to import our new table
 setwd("C:/Users/keemo/Desktop/data analysis/google/course 8/capstone/back up files")
 
@@ -804,72 +653,28 @@ year_data_v4 <- read.csv("year_data_v4.csv")
 
 # View the data frame
 View(year_data_v4)
+
+```
 then we creat new table as following:
 
+```{r}
 # Create the table
 hour_table_v2 <- table(year_data_v4$start_hour, year_data_v4$member_casual)
 
 # Print the table
 print(hour_table_v2)
-##     
-##      casual member
-##   0   44776  36741
-##   1   29289  22482
-##   2   17953  13182
-##   3   10393   8094
-##   4    7294   8923
-##   5   12627  32591
-##   6   31312  98408
-##   7   54178 182196
-##   8   72619 221548
-##   9   73649 153423
-##   10  92625 141943
-##   11 119586 167999
-##   12 141923 193126
-##   13 148374 192271
-##   14 157929 193383
-##   15 177168 234987
-##   16 199505 312532
-##   17 221392 371585
-##   18 195508 297363
-##   19 148761 214459
-##   20 109411 150314
-##   21  93483 117513
-##   22  82928  89078
-##   23  61487  57825
+
+```
 now we can lets creat a new plot for our table after we cleaned it in previous steps:
 
+
+```{r}
 library(scales)
 hour_table_v2 <- table(year_data_v4$start_hour, year_data_v4$member_casual)
 
 # Print the table
 print(hour_table_v2) 
-##     
-##      casual member
-##   0   44776  36741
-##   1   29289  22482
-##   2   17953  13182
-##   3   10393   8094
-##   4    7294   8923
-##   5   12627  32591
-##   6   31312  98408
-##   7   54178 182196
-##   8   72619 221548
-##   9   73649 153423
-##   10  92625 141943
-##   11 119586 167999
-##   12 141923 193126
-##   13 148374 192271
-##   14 157929 193383
-##   15 177168 234987
-##   16 199505 312532
-##   17 221392 371585
-##   18 195508 297363
-##   19 148761 214459
-##   20 109411 150314
-##   21  93483 117513
-##   22  82928  89078
-##   23  61487  57825
+
 # Convert the table to data frames
 member_df <- data.frame(hour = 0:23, rider_count = hour_table_v2[, "member"]) 
 casual_df <- data.frame(hour = 0:23, rider_count = hour_table_v2[, "casual"])
@@ -882,19 +687,26 @@ ggplot() +
   labs(title = "Number of Rides by Hour (Member vs Casual)") +
   scale_x_continuous(breaks = 0:23, labels = 0:23)+
   scale_y_continuous(labels = scales::comma)
-
-
+```
+![Visualization](viz_7.png)
 very good, now we can see the line chart makes more sense
 
-##some findings##
+##some findings from R analyzing and exploring##
 
-1- we notice that summer months especially July has the most rides and also has the most time of ride length
+1- we notice that summer months especially July has the most rides and also has the most time of ride length 
 
-2- the member riders are more than casual riders by almost the half
+2- the member riders are more than casual riders by almost the half 
 
 3- the two main common bike type are the electric and classic, with very little who ride the docked (less than 3%)
 
-4- members ride more in the middle of the week Tuseday, Wednesday and Thursday more than other days, while casual riders prefer saturday and sunday little bit more than other days
+4- members ride more in the middle of the week Tuseday, Wednesday and Thursday more than other days, while casual riders prefer saturday and sunday little bit more than other days 
 
-5- the preferd time throughout the day is around 5 pm , while member riders has also rise in 8 am o’clock
-```
+5- the preferd time throughout the day is around 5 pm , while member riders has also rise in 8 am o'clock
+
+
+lastly we can see the locations and the stations where riders most start their journy to focus our ads and put more bikes there:
+
+![Visualization](viz_tb_1.JPG)
+
+here are the top 10 stations riders start their journy from:
+![Visualization](viz_tb_2.JPG)
